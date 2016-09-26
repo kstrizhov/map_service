@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Leaflet example</title>
+<meta charset="utf-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet"
+	href="../libs/leaflet/leaflet.css" />
+</head>
+<body>
+	<h1>Добро пожаловать</h1>
+
+	<div id="map" style="width: 600px; height: 300px"></div>
+
+	<script src="../libs/leaflet/leaflet-src.js"></script>
+
+	<script src="../map/map.js"></script>
+
+	<br><br>
+	
+	<script src="/socket.io/socket.io.js"></script>
+	<button onclick="getPoints()">Загрузить все точки на карту!</button>	
+	<script>
+		function getPoints() {
+			var socket = io();
+			socket.on('connected', function() {
+				socket.emit('get points', 'data required');
+			});
+			socket.on('point from server', function(data){
+				var latlng = L.latLng(data.lat, data.lng);
+				
+				var rsIcon = L.icon({
+					iconUrl: "rs.png",
+					iconSize:[32, 32]
+				});
+
+				var l = new L.marker(latlng, {
+					opacity : 0.8
+				});
+				
+				if(data.type == 'rs') {
+					l.setIcon(rsIcon);
+				}
+				
+				l.bindPopup(data.type);
+				
+				map.addLayer(l);
+			});
+		}
+	</script>
+</body>
+</html>
