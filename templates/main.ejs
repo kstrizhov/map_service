@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Leaflet example</title>
+<title>FLEFE.RU::GIS</title>
 <meta charset="utf-8" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,26 +10,37 @@
 	href="../libs/leaflet/leaflet.css" />
 </head>
 <body>
-	<h1>Добро пожаловать</h1>
-
-	<div id="map" style="width: 600px; height: 300px"></div>
+	<div id="map" style="width: 1000; height: 580px"></div>
 
 	<script src="../libs/leaflet/leaflet-src.js"></script>
+	
+	<script src="../node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+	<link href="../node_modules/leaflet.markercluster/dist/MarkerCluster.css" rel="stylesheet">
+	<link href="../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css" rel="stylesheet">
+	
+	<script src="../node_modules/leaflet-easybutton/src/easy-button.js"></script>
+	<link href="../node_modules/leaflet-easybutton/src/easy-button.css" rel="stylesheet">
+	
 
 	<script src="../map/map.js"></script>
 
 	<br><br>
 	
 	<script src="/socket.io/socket.io.js"></script>
-	<button onclick="getPoints()">Загрузить все точки на карту!</button>	
 	<script>
 		function getPoints() {
 			var socket = io();
+			
+			var markers = L.markerClusterGroup();
+			leafletMap.addLayer(markers);
+			
 			socket.on('connected', function() {
 				socket.emit('get points', 'data required');
 			});
+			
 			socket.on('point from server', function(data){
-				var latlng = L.latLng(data.lat, data.lng);
+			
+				var latlng = L.latLng(data.long, data.lat);
 				
 				var rsIcon = L.icon({
 					iconUrl: "rs.png",
@@ -46,7 +57,7 @@
 				
 				l.bindPopup(data.type);
 				
-				map.addLayer(l);
+				markers.addLayer(l);
 			});
 		}
 	</script>
